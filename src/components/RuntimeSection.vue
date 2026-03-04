@@ -34,7 +34,7 @@ function formatTime(secs: number): string {
 }
 
 const hwColor = computed(() =>
-  state.value.hardwareStatusText.includes("已开启")
+  (state.value.hardwareAvailableH264 || state.value.hardwareAvailableH265)
     ? "text-green-500"
     : "text-gray-500 dark:text-gray-400"
 );
@@ -112,7 +112,7 @@ const displayQueue = computed(() => state.value.queueItems.slice(0, 6));
         :key="item.id"
         class="text-[11px] text-gray-600 dark:text-gray-300"
       >
-        <span>• {{ item.name }}  原始 {{ formatBytes(item.sizeBytes) }}  预估 {{ item.estimatedBytes ? formatBytes(item.estimatedBytes) : '-' }}</span>
+        <span>• {{ item.name }}  原始 {{ formatBytes(item.sizeBytes) }}  预估 {{ item.estimatedBytes != null ? formatBytes(item.estimatedBytes) : '-' }}</span>
       </div>
       <p v-if="state.queueItems.length > 6" class="text-[10px] text-gray-400">
         …还有 {{ state.queueItems.length - 6 }} 项

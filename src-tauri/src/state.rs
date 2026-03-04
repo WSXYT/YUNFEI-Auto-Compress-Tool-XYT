@@ -330,7 +330,7 @@ impl AppState {
                 if let Some(ref date_str) = self.custom_date {
                     if let Ok(nd) = NaiveDate::parse_from_str(date_str, "%Y-%m-%d") {
                         let dt = nd.and_hms_opt(0, 0, 0)?;
-                        Some(DateTime::from_naive_utc_and_offset(dt, *Local::now().offset()))
+                        dt.and_local_timezone(Local).single()
                     } else {
                         None
                     }

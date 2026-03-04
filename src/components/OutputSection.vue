@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import SectionCard from "./SectionCard.vue";
 import { useAppState } from "../composables/useAppState";
 import type { OutputMode } from "../types";
@@ -7,6 +7,10 @@ import type { OutputMode } from "../types";
 const { state, updateSetting, applySuffix, pickFolder } = useAppState();
 
 const draftSuffix = ref(state.value.suffixText);
+
+watch(() => state.value.suffixText, (newVal) => {
+  draftSuffix.value = newVal;
+});
 
 const outputModeOpts: { value: OutputMode; label: string }[] = [
   { value: "overwrite", label: "覆盖原文件" },

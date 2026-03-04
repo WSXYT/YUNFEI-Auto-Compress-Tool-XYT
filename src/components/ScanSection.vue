@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import SectionCard from "./SectionCard.vue";
 import { useAppState } from "../composables/useAppState";
 import type { TimeGateOption, ScanIntervalOption } from "../types";
@@ -7,8 +7,13 @@ import type { TimeGateOption, ScanIntervalOption } from "../types";
 const { state, updateSetting, applyKeywords } = useAppState();
 
 const draftKeyword = ref("");
-const extraKeywords = ref<string[]>([]);
+const extraKeywords = ref<string[]>([...state.value.keywords.slice(1)]);
 const kwExpanded = ref(false);
+
+// Sync extraKeywords when state.keywords changes from backend
+watch(() => state.value.keywords, (newKws) => {
+  extraKeywords.value = [...newKws.slice(1)];
+});
 
 function confirmPrimary() {
   if (!draftKeyword.value.trim()) return;
@@ -28,9 +33,8 @@ function confirmAll() {
 }
 
 function removeExtraKw(i: number) {
-  const kws = [...state.value.keywords];
-  kws.splice(i + 1, 1);
-  applyKeywords(kws);
+  extraKeywords.value.splice(i, 1);
+  confirmAll();
 }
 
 const timeGateOpts: { value: TimeGateOption; label: string }[] = [
@@ -66,28 +70,27 @@ const scanIntervalOpts: { value: ScanIntervalOption; label: string }[] = [
     <!-- Extra keywords -->
     <div class="text-sm">
       <div class="flex items-center justify-between">
-        <span class="text-gray-600 dark:text-gray-300">更多关键词 ({{ Math.max(0, state.keywords.length - 1) }})</span>
+        <span class="text-gray-600 dark:text-gray-300">更多关键词 ({{ extraKeywords.length }})</span>
         <div class="flex gap-2">
           <button class="text-xs text-blue-500 hover:underline" @click="kwExpanded = !kwExpanded">
             {{ kwExpanded ? '收起' : '展开' }}
           </button>
           <button
             class="text-xs text-blue-500 hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
-            :disabled="state.keywords.length >= 3"
+            :disabled="extraKeywords.length >= 2"
             @click="addExtraKeyword"
           >添加…</button>
         </div>
       </div>
-      <div v-if="kwExpanded && state.keywords.length > 1" class="mt-1 space-y-1">
+      <div v-if="kwExpanded && extraKeywords.length > 0" class="mt-1 space-y-1">
         <div
-          v-for="(kw, i) in state.keywords.slice(1)"
+          v-for="(_kw, i) in extraKeywords"
           :key="i"
           class="flex items-center gap-1 bg-white dark:bg-gray-700 rounded px-2 py-1"
         >
           <input
-            :value="kw"
+            v-model="extraKeywords[i]"
             class="text-xs flex-1 bg-transparent border-none outline-none text-gray-700 dark:text-gray-200"
-            @input="extraKeywords[i] = ($event.target as HTMLInputElement).value"
           />
           <button class="text-red-500 text-xs font-bold hover:text-red-700" @click="removeExtraKw(i)">✕</button>
         </div>
