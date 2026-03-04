@@ -18,7 +18,7 @@ async function chooseFfmpeg() {
 }
 
 function formatBytes(b: number): string {
-  if (b <= 0) return "-";
+  if (b < 0) return "-";
   if (b < 1024) return b + " B";
   if (b < 1048576) return (b / 1024).toFixed(1) + " KB";
   if (b < 1073741824) return (b / 1048576).toFixed(1) + " MB";

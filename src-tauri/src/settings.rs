@@ -38,7 +38,8 @@ pub fn load_settings(app_handle: &tauri::AppHandle, state: &mut AppState) {
     }
     if let Some(v) = store.get("customDate") {
         if let Some(s) = v.as_str() {
-            state.custom_date = Some(s.to_string());
+            let trimmed = s.trim();
+            state.custom_date = if trimmed.is_empty() { None } else { Some(trimmed.to_string()) };
         }
     }
     if let Some(v) = store.get("scanInterval") {

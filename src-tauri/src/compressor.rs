@@ -185,7 +185,7 @@ pub async fn compress_file(
         let mut child = Command::new(&ffmpeg_path)
             .args(&args)
             .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
+            .stderr(Stdio::null())
             .spawn()
             .map_err(|e| format!("启动ffmpeg失败: {}", e))?;
 
@@ -237,7 +237,6 @@ pub async fn compress_file(
         // Handle output mode
         match output_mode {
             OutputMode::Overwrite => {
-                let _ = std::fs::remove_file(&file_path);
                 std::fs::rename(&output_path, &file_path)
                     .map_err(|e| format!("替换文件失败: {}", e))?;
             }
