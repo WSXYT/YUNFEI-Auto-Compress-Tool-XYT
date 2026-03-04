@@ -4,6 +4,7 @@
 # Build artifacts
 /build/
 *.app/
+/dist/
 
 # Xcode/Swift
 *.xcworkspace/
@@ -11,3 +12,19 @@
 
 # Logs
 *.log
+
+# Node
+node_modules/
+
+# Tauri / Rust
+src-tauri/target/
+src-tauri/gen/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Release binaries
+release/
