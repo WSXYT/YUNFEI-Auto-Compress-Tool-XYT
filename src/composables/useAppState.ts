@@ -19,8 +19,8 @@ export function useAppState() {
     try {
       const fs = await invoke<FrontendState>("get_state");
       apply(fs);
-    } catch (_e) {
-      /* backend not ready yet */
+    } catch (e) {
+      console.warn("Failed to load initial state:", e);
     }
     await listen<FrontendState>("state-updated", (ev) => {
       apply(ev.payload);
