@@ -9,9 +9,18 @@ defineEmits<{ (e: "openDonate"): void }>();
 const showUpdateLog = ref(false);
 
 const updateLogEntries = [
-  "v1.0.2 — 新增多目录监听、挂载检测",
-  "v1.0.1 — 新增关键词过滤、后缀输出",
-  "v1.0.0 — 首个版本，支持自动扫描和压缩",
+  "1.0.2.51 捐赠二维码内置打包",
+  "1.0.2.50 修复启动校验误判（输出路径/压缩器）",
+  "1.0.2.48 关键词确认后取消高亮",
+  "1.0.2.47 关键词确认高亮与日志完善",
+  "1.0.2.46 更多关键词增加确认按钮",
+  "1.0.2.45 挂载检测恢复/监听与关键词UI优化",
+  "1.0.2.44 恢复多目录/多关键词与功能详情增强",
+  "1.0.1.33 修复关闭窗口后状态栏无法唤醒",
+  "1.0.1.32 新增挂载自动检测开关与时间间隔设置",
+  "1.0.1.31 挂载状态显示与未挂载提醒",
+  "1.0.1.29 新增说明按钮与更新日志入口",
+  '1.0.1.28 队列完成显示\u201C当前空闲\u201D，恢复 ffmpeg 自动下载',
 ];
 
 const recentLogs = computed(() => state.value.logs.slice(-12).reverse());
@@ -26,7 +35,7 @@ const recentLogs = computed(() => state.value.logs.slice(-12).reverse());
           ? 'bg-blue-500 text-white'
           : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'"
         @click="showUpdateLog = !showUpdateLog"
-      >更新日志</button>
+      >{{ showUpdateLog ? '收起更新日志' : '更新日志' }}</button>
     </div>
 
     <div v-if="showUpdateLog" class="space-y-0.5">
@@ -44,11 +53,11 @@ const recentLogs = computed(() => state.value.logs.slice(-12).reverse());
       <p v-if="!recentLogs.length" class="text-[11px] text-gray-400">暂无日志</p>
     </div>
 
-    <div class="flex justify-center pt-1">
+    <div class="flex justify-end pt-1">
       <button
-        class="text-xs px-3 py-1 rounded-lg bg-orange-400 hover:bg-orange-500 text-white"
+        class="text-xs px-3 py-1 rounded-lg bg-blue-500 hover:bg-blue-600 text-white"
         @click="$emit('openDonate')"
-      >☕ 请作者喝奶茶</button>
+      >请作者喝奶茶</button>
     </div>
   </div>
 </template>

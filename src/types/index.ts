@@ -59,6 +59,7 @@ export interface FrontendState {
   hardwareAvailableH265: boolean;
   isDownloadingFfmpeg: boolean;
   isCompressing: boolean;
+  lastScan: string | null;
 
   statusDisplay: string;
   queueProgress: string;
@@ -110,6 +111,7 @@ export const defaultState: FrontendState = {
   hardwareAvailableH265: false,
   isDownloadingFfmpeg: false,
   isCompressing: false,
+  lastScan: null,
 
   statusDisplay: "",
   queueProgress: "",

@@ -401,6 +401,7 @@ impl AppState {
             hardware_available_h265: self.hardware_available_h265,
             is_downloading_ffmpeg: self.is_downloading_ffmpeg,
             is_compressing: self.is_compressing,
+            last_scan: self.last_scan.map(|dt| dt.format("%H:%M:%S").to_string()),
 
             status_display: self.status_display(),
             queue_progress: self.queue_progress(),
@@ -475,6 +476,7 @@ pub struct FrontendState {
     pub hardware_available_h265: bool,
     pub is_downloading_ffmpeg: bool,
     pub is_compressing: bool,
+    pub last_scan: Option<String>,
 
     // Computed
     pub status_display: String,

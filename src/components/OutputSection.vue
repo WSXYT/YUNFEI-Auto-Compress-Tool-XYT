@@ -50,8 +50,8 @@ function confirmSuffix() {
       </div>
     </div>
 
-    <!-- Suffix (only when suffix mode) -->
-    <div v-if="state.outputMode === 'suffix'" class="flex items-center justify-between text-sm">
+    <!-- Suffix (always visible, matching original Swift UI) -->
+    <div class="flex items-center justify-between text-sm">
       <span class="text-gray-600 dark:text-gray-300 shrink-0">后缀</span>
       <div class="flex items-center gap-1">
         <input
@@ -66,29 +66,29 @@ function confirmSuffix() {
 
     <!-- Overwrite warning -->
     <p v-if="state.outputMode === 'overwrite'" class="text-[11px] text-orange-500">
-      ⚠ 覆盖模式会直接替换原文件
+      覆盖模式会直接替换原文件
     </p>
 
-    <!-- Launch at login -->
+    <!-- Launch at login + Keep alive on same row -->
     <div class="flex items-center justify-between text-sm">
-      <span class="text-gray-600 dark:text-gray-300">开机自启动</span>
-      <input
-        type="checkbox"
-        class="accent-blue-500 w-4 h-4"
-        :checked="state.launchAtLogin"
-        @change="updateSetting('launchAtLogin', ($event.target as HTMLInputElement).checked)"
-      />
-    </div>
-
-    <!-- Keep alive -->
-    <div class="flex items-center justify-between text-sm">
-      <span class="text-gray-600 dark:text-gray-300">后台常驻（关闭窗口不退出）</span>
-      <input
-        type="checkbox"
-        class="accent-blue-500 w-4 h-4"
-        :checked="state.keepAlive"
-        @change="updateSetting('keepAlive', ($event.target as HTMLInputElement).checked)"
-      />
+      <label class="flex items-center gap-1.5 cursor-pointer">
+        <input
+          type="checkbox"
+          class="accent-blue-500 w-4 h-4"
+          :checked="state.launchAtLogin"
+          @change="updateSetting('launchAtLogin', ($event.target as HTMLInputElement).checked)"
+        />
+        <span class="text-gray-600 dark:text-gray-300">开机自启动</span>
+      </label>
+      <label class="flex items-center gap-1.5 cursor-pointer">
+        <input
+          type="checkbox"
+          class="accent-blue-500 w-4 h-4"
+          :checked="state.keepAlive"
+          @change="updateSetting('keepAlive', ($event.target as HTMLInputElement).checked)"
+        />
+        <span class="text-gray-600 dark:text-gray-300">后台常驻（关闭窗口不退出）</span>
+      </label>
     </div>
   </SectionCard>
 </template>
