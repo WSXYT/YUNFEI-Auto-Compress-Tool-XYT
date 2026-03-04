@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: universal-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app and create release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'YUNFEI Auto Compress ${{ github.ref_name }}'
+          releaseBody: |
+            ## 云飞自动压缩工具 ${{ github.ref_name }}
+
+            ### 下载 / Downloads
+            - **macOS**: 下载 `.dmg` 文件
+            - **Windows**: 下载 `.msi` 安装包
+
+            ### 更新日志 / Changelog
+            See [commits](https://github.com/${{ github.repository }}/commits/${{ github.ref_name }})
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}

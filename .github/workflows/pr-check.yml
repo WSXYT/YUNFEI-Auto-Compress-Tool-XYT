@@ -1,0 +1,67 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: pr-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npx vue-tsc --noEmit
+
+      - name: Build frontend
+        run: npx vite build
+
+  rust-check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npx vite build
+
+      - name: Cargo check
+        working-directory: src-tauri
+        run: cargo check
+
+      - name: Cargo clippy
+        working-directory: src-tauri
+        run: cargo clippy -- -D warnings
