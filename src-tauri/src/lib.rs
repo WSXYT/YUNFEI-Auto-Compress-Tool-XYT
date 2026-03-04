@@ -203,7 +203,12 @@ pub fn run() {
                 // Use try_lock to avoid potential deadlock with block_on on Windows
                 let keep_alive = match state_wrapper_close.try_lock() {
                     Ok(s) => s.keep_alive,
-                    Err(_) => true, // Default to keeping alive if lock is held
+                    Err(_) => {
+                        // Lock held by another operation (e.g. compression);
+                        // default to keeping alive to prevent data loss
+                        log::warn!("Could not acquire state lock on close, keeping window alive");
+                        true
+                    }
                 };
 
                 if keep_alive {
@@ -215,7 +220,6 @@ pub fn run() {
         .run(tauri::generate_context!())
         .unwrap_or_else(|e| {
             log::error!("Application error: {}", e);
-            eprintln!("Application error: {}", e);
         });
 }
 
