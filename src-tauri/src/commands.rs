@@ -44,8 +44,13 @@ pub async fn update_settings(
             }
         }
         "customDate" => {
-            if let Some(v) = value.as_str() {
-                s.custom_date = Some(v.to_string());
+            match value.as_str() {
+                Some(v) if !v.is_empty() => {
+                    s.custom_date = Some(v.to_string());
+                }
+                _ => {
+                    s.custom_date = None;
+                }
             }
         }
         "scanInterval" => {
