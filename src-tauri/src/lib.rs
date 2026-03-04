@@ -200,10 +200,11 @@ pub fn run() {
         ])
         .on_window_event(move |window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                let keep_alive = tauri::async_runtime::block_on(async {
-                    let s = state_wrapper_close.lock().await;
-                    s.keep_alive
-                });
+                // Use try_lock to avoid potential deadlock with block_on on Windows
+                let keep_alive = match state_wrapper_close.try_lock() {
+                    Ok(s) => s.keep_alive,
+                    Err(_) => true, // Default to keeping alive if lock is held
+                };
 
                 if keep_alive {
                     api.prevent_close();
@@ -212,7 +213,10 @@ pub fn run() {
             }
         })
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .unwrap_or_else(|e| {
+            log::error!("Application error: {}", e);
+            eprintln!("Application error: {}", e);
+        });
 }
 
 fn build_system_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
@@ -237,7 +241,13 @@ fn build_system_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>>
         .item(&quit)
         .build()?;
 
+    let icon = app
+        .default_window_icon()
+        .cloned()
+        .ok_or("no default window icon found")?;
+
     let _tray = TrayIconBuilder::new()
+        .icon(icon)
         .menu(&menu)
         .tooltip(APP_TITLE)
         .on_menu_event(move |app_handle, event| {
