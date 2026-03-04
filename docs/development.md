@@ -1,52 +1,52 @@
-# Development Guide
+# 开发指南
 
-## Prerequisites
+## 前置条件
 
-| Requirement | Version |
+| 要求 | 版本 |
 |-------------|---------|
 | [Node.js](https://nodejs.org/) | 18+ |
-| [Rust](https://rustup.rs/) | stable (latest) |
-| npm | Bundled with Node.js |
+| [Rust](https://rustup.rs/) | stable（最新版） |
+| npm | 随 Node.js 捆绑 |
 
-### Platform-Specific Dependencies
+### 平台特定依赖
 
-**macOS:**
-- Xcode Command Line Tools: `xcode-select --install`
+**macOS：**
+- Xcode 命令行工具：`xcode-select --install`
 
-**Windows:**
+**Windows：**
 - [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
-- [WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (pre-installed on Windows 10+)
+- [WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)（Windows 10+ 已预装）
 
-## Setup
+## 设置
 
 ```bash
-# Clone the repository
+# 克隆仓库
 git clone https://github.com/your-org/YUNFEI-Auto-Compress-Tool-XYT.git
 cd YUNFEI-Auto-Compress-Tool-XYT
 
-# Install frontend dependencies
+# 安装前端依赖
 npm install
 
-# Run in development mode (starts both Vite dev server and Tauri)
+# 以开发模式运行（同时启动 Vite 开发服务器和 Tauri）
 npm run tauri dev
 ```
 
-The development server opens a native window with hot-reload enabled for the frontend. Rust changes trigger an automatic rebuild.
+开发服务器会打开一个启用了前端热重载的原生窗口。Rust 代码的更改会触发自动重新构建。
 
-## Building
+## 构建
 
 ```bash
-# Build for production
+# 构建生产版本
 npm run tauri build
 ```
 
-Build output is located in `src-tauri/target/release/bundle/`. On macOS, use `build_dmg.sh` to create a `.dmg` installer.
+构建输出位于 `src-tauri/target/release/bundle/`。在 macOS 上，使用 `build_dmg.sh` 创建 `.dmg` 安装包。
 
-## Project Structure
+## 项目结构
 
 ```
-├── src/                        # Vue 3 frontend
-│   ├── components/             # UI components (10 components)
+├── src/                        # Vue 3 前端
+│   ├── components/             # UI 组件（10 个组件）
 │   │   ├── HeaderSection.vue
 │   │   ├── MonitorSection.vue
 │   │   ├── ScanSection.vue
@@ -58,74 +58,74 @@ Build output is located in `src-tauri/target/release/bundle/`. On macOS, use `bu
 │   │   ├── HelpDialog.vue
 │   │   └── DonateDialog.vue
 │   ├── composables/
-│   │   └── useAppState.ts      # Central state management
+│   │   └── useAppState.ts      # 核心状态管理
 │   ├── types/
-│   │   └── index.ts            # TypeScript type definitions
-│   ├── App.vue                 # Root component
-│   └── main.ts                 # Vue app entry point
-├── src-tauri/                  # Rust backend
+│   │   └── index.ts            # TypeScript 类型定义
+│   ├── App.vue                 # 根组件
+│   └── main.ts                 # Vue 应用入口点
+├── src-tauri/                  # Rust 后端
 │   ├── src/
-│   │   ├── main.rs             # Tauri entry point
-│   │   ├── lib.rs              # Module registration
-│   │   ├── commands.rs         # IPC command handlers
-│   │   ├── compressor.rs       # FFmpeg argument builder
-│   │   ├── ffmpeg.rs           # FFmpeg detection & management
-│   │   ├── monitor.rs          # Folder mount monitoring
-│   │   ├── scanner.rs          # Video file scanner
-│   │   ├── settings.rs         # Persistent settings
-│   │   └── state.rs            # Application state
-│   ├── Cargo.toml              # Rust dependencies
-│   └── tauri.conf.json         # Tauri configuration
-├── docs/                       # Documentation
-├── index.html                  # HTML entry point
-├── package.json                # Node.js dependencies & scripts
-├── vite.config.ts              # Vite configuration
-├── tsconfig.json               # TypeScript configuration
-└── build_dmg.sh                # macOS DMG builder script
+│   │   ├── main.rs             # Tauri 入口点
+│   │   ├── lib.rs              # 模块注册
+│   │   ├── commands.rs         # IPC 命令处理器
+│   │   ├── compressor.rs       # FFmpeg 参数构建器
+│   │   ├── ffmpeg.rs           # FFmpeg 检测和管理
+│   │   ├── monitor.rs          # 文件夹挂载监控
+│   │   ├── scanner.rs          # 视频文件扫描器
+│   │   ├── settings.rs         # 持久化设置
+│   │   └── state.rs            # 应用状态
+│   ├── Cargo.toml              # Rust 依赖
+│   └── tauri.conf.json         # Tauri 配置
+├── docs/                       # 文档
+├── index.html                  # HTML 入口点
+├── package.json                # Node.js 依赖和脚本
+├── vite.config.ts              # Vite 配置
+├── tsconfig.json               # TypeScript 配置
+└── build_dmg.sh                # macOS DMG 构建脚本
 ```
 
-## Adding Features
+## 添加功能
 
-### Adding a New Setting
+### 添加新设置项
 
-1. **State** — Add the field to `AppState` in `src-tauri/src/state.rs`
-2. **Settings** — Handle serialization in `src-tauri/src/settings.rs`
-3. **Commands** — Add or update a command in `src-tauri/src/commands.rs`
-4. **Types** — Add the field to the TypeScript interface in `src/types/index.ts`
-5. **Composable** — Expose the setting in `src/composables/useAppState.ts`
-6. **Component** — Add UI controls in the appropriate `src/components/*.vue` file
+1. **状态** —— 在 `src-tauri/src/state.rs` 的 `AppState` 中添加字段
+2. **设置** —— 在 `src-tauri/src/settings.rs` 中处理序列化
+3. **命令** —— 在 `src-tauri/src/commands.rs` 中添加或更新命令
+4. **类型** —— 在 `src/types/index.ts` 的 TypeScript 接口中添加字段
+5. **组合式函数** —— 在 `src/composables/useAppState.ts` 中暴露该设置
+6. **组件** —— 在相应的 `src/components/*.vue` 文件中添加 UI 控件
 
-### Adding a New UI Section
+### 添加新的 UI 区块
 
-1. Create a new component in `src/components/` (use `SectionCard` as wrapper)
-2. Import and place it in `src/App.vue`
-3. Connect it to `useAppState` for state and actions
+1. 在 `src/components/` 中创建新组件（使用 `SectionCard` 作为容器）
+2. 在 `src/App.vue` 中导入并放置组件
+3. 连接 `useAppState` 以获取状态和操作
 
-### Adding a New Rust Command
+### 添加新的 Rust 命令
 
-1. Define the function with `#[tauri::command]` in `src-tauri/src/commands.rs`
-2. Register it in the `invoke_handler` in `src-tauri/src/lib.rs`
-3. Call it from the frontend using `invoke("command_name", { args })`
+1. 在 `src-tauri/src/commands.rs` 中使用 `#[tauri::command]` 定义函数
+2. 在 `src-tauri/src/lib.rs` 的 `invoke_handler` 中注册
+3. 从前端使用 `invoke("command_name", { args })` 调用
 
-## Debugging
+## 调试
 
-### Frontend
+### 前端
 
-- Open DevTools in the Tauri window: right-click → "Inspect Element" (debug builds only)
-- Vue DevTools browser extension works with Tauri's WebView
-- Check the browser console for IPC errors
+- 在 Tauri 窗口中打开开发者工具：右键点击 → "检查元素"（仅限调试版本）
+- Vue DevTools 浏览器扩展可与 Tauri 的 WebView 配合使用
+- 检查浏览器控制台中的 IPC 错误
 
-### Backend
+### 后端
 
-- Rust logs are printed to the terminal where `npm run tauri dev` is running
-- Use `println!()` or the `log` crate for debug output
-- Set `RUST_LOG=debug` environment variable for verbose logging
+- Rust 日志会输出到运行 `npm run tauri dev` 的终端
+- 使用 `println!()` 或 `log` crate 进行调试输出
+- 设置 `RUST_LOG=debug` 环境变量以获取详细日志
 
-### Common Issues
+### 常见问题
 
-| Issue | Solution |
+| 问题 | 解决方案 |
 |-------|----------|
-| FFmpeg not found | Use the "Refresh" button in RuntimeSection, or manually set the path |
-| Build fails on macOS | Ensure Xcode CLI tools are installed: `xcode-select --install` |
-| Build fails on Windows | Install Visual Studio C++ Build Tools |
-| Hot reload not working | Restart `npm run tauri dev` — Vite HMR occasionally disconnects |
+| 找不到 FFmpeg | 使用 RuntimeSection 中的"刷新"按钮，或手动设置路径 |
+| macOS 上构建失败 | 确保已安装 Xcode 命令行工具：`xcode-select --install` |
+| Windows 上构建失败 | 安装 Visual Studio C++ Build Tools |
+| 热重载不工作 | 重启 `npm run tauri dev` —— Vite HMR 偶尔会断开连接 |

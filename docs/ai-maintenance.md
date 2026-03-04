@@ -1,123 +1,123 @@
-# AI Maintenance Guide
+# AI 维护指南
 
-This document helps AI agents (Copilot, ChatGPT, etc.) understand, navigate, and maintain the YUNFEI Auto Compress Tool codebase.
+本文档帮助 AI 代理（Copilot、ChatGPT 等）理解、浏览和维护 YUNFEI Auto Compress Tool 代码库。
 
-## Project Overview
+## 项目概述
 
-YUNFEI Auto Compress Tool is a **Tauri 2** desktop application for automated video compression. It monitors folders for new video files, filters them by keywords, and compresses them using FFmpeg.
+YUNFEI Auto Compress Tool 是一个基于 **Tauri 2** 的桌面应用程序，用于自动化视频压缩。它监控文件夹中的新视频文件，按关键词过滤，并使用 FFmpeg 进行压缩。
 
-**Key characteristics:**
-- Cross-platform: macOS + Windows
-- Single-window desktop app
-- Reactive frontend synced with Rust backend state
-- All persistent settings stored via Tauri's store plugin
+**主要特点：**
+- 跨平台：macOS + Windows
+- 单窗口桌面应用
+- 响应式前端与 Rust 后端状态同步
+- 所有持久化设置通过 Tauri 的 store 插件存储
 
-## Module Responsibilities
+## 模块职责
 
-### Rust Backend (`src-tauri/src/`)
+### Rust 后端（`src-tauri/src/`）
 
-| Module | File | Purpose |
+| 模块 | 文件 | 用途 |
 |--------|------|---------|
-| State | `state.rs` | Defines `AppState` struct and all related enums. This is the single source of truth for the entire application state. |
-| Commands | `commands.rs` | All `#[tauri::command]` handlers. These are the IPC entry points invoked by the frontend. Keep them thin — delegate to other modules. |
-| FFmpeg | `ffmpeg.rs` | FFmpeg binary management: detection, path resolution, version checking, hardware acceleration queries, and auto-download. |
-| Scanner | `scanner.rs` | Scans configured directories for video files matching keyword filters. Supports date-based filtering. |
-| Compressor | `compressor.rs` | Builds FFmpeg CLI arguments based on codec, bitrate, hardware encoding, and output mode settings. |
-| Monitor | `monitor.rs` | Validates that configured input directories exist and are accessible (mount status checks for external drives). |
-| Settings | `settings.rs` | Serializes/deserializes `AppState` to/from persistent JSON storage using Tauri's store plugin. |
-| Lib | `lib.rs` | Module declarations (`mod` statements) and Tauri app builder with command and plugin registration. |
+| 状态 | `state.rs` | 定义 `AppState` 结构体及所有相关枚举。这是整个应用状态的唯一数据源。 |
+| 命令 | `commands.rs` | 所有 `#[tauri::command]` 处理器。这些是前端调用的 IPC 入口点。保持精简 —— 将逻辑委托给其他模块。 |
+| FFmpeg | `ffmpeg.rs` | FFmpeg 二进制文件管理：检测、路径解析、版本检查、硬件加速查询和自动下载。 |
+| 扫描器 | `scanner.rs` | 扫描配置目录中与关键词过滤器匹配的视频文件。支持基于日期的过滤。 |
+| 压缩器 | `compressor.rs` | 根据编解码器、比特率、硬件编码和输出模式设置构建 FFmpeg CLI 参数。 |
+| 监控器 | `monitor.rs` | 验证配置的输入目录是否存在且可访问（外部驱动器的挂载状态检查）。 |
+| 设置 | `settings.rs` | 使用 Tauri 的 store 插件将 `AppState` 序列化/反序列化到持久化 JSON 存储。 |
+| 库 | `lib.rs` | 模块声明（`mod` 语句）和 Tauri 应用构建器（包含命令和插件注册）。 |
 
-### Vue Frontend (`src/`)
+### Vue 前端（`src/`）
 
-| File | Purpose |
+| 文件 | 用途 |
 |------|---------|
-| `composables/useAppState.ts` | Central state composable. All components read state and call actions through this. |
-| `types/index.ts` | TypeScript interfaces mirroring Rust's `AppState` and related types. |
-| `components/*.vue` | UI components organized by feature section. Each section maps to a logical area of the app. |
+| `composables/useAppState.ts` | 核心状态组合式函数。所有组件通过它读取状态和调用操作。 |
+| `types/index.ts` | 与 Rust 的 `AppState` 及相关类型对应的 TypeScript 接口。 |
+| `components/*.vue` | 按功能区块组织的 UI 组件。每个区块对应应用的一个逻辑区域。 |
 
-## State Management Patterns
+## 状态管理模式
 
-### Backend State
+### 后端状态
 
 ```rust
-// State is wrapped in Arc<Mutex<>> for thread-safe sharing
+// 状态封装在 Arc<Mutex<>> 中以实现线程安全共享
 pub struct AppState { /* fields */ }
 
-// Accessed in commands via Tauri's managed state:
+// 在命令中通过 Tauri 的托管状态访问：
 #[tauri::command]
 fn my_command(state: State<'_, Arc<Mutex<AppState>>>) -> Result<...> {
     let mut s = state.lock().unwrap();
-    // read/modify s
+    // 读取/修改 s
 }
 ```
 
-### Frontend State
+### 前端状态
 
 ```typescript
-// useAppState provides reactive state + actions
+// useAppState 提供响应式状态和操作
 const { state, updateSetting, startScan } = useAppState();
 
-// State is synced from Rust on init and after each mutation
-// Events from Rust push real-time updates (progress, queue changes)
+// 状态在初始化时从 Rust 同步，每次修改后也会同步
+// 来自 Rust 的事件推送实时更新（进度、队列变更）
 ```
 
-### State Sync Flow
+### 状态同步流程
 
-1. **App start** → `init()` calls `get_state` command → populates reactive `state`
-2. **User action** → component calls `updateSetting(key, value)` → invokes Rust command → Rust updates `AppState` + persists → returns updated state → frontend syncs
-3. **Background events** → Rust emits events → frontend listeners update reactive state
+1. **应用启动** → `init()` 调用 `get_state` 命令 → 填充响应式 `state`
+2. **用户操作** → 组件调用 `updateSetting(key, value)` → 调用 Rust 命令 → Rust 更新 `AppState` 并持久化 → 返回更新后的状态 → 前端同步
+3. **后台事件** → Rust 发出事件 → 前端监听器更新响应式状态
 
-## Common Tasks
+## 常见任务
 
-### Adding a New Setting
+### 添加新设置项
 
-1. Add field to `AppState` in `state.rs` with a default value
-2. Add serialization/deserialization in `settings.rs`
-3. Add or update command handler in `commands.rs` (usually `update_settings`)
-4. Add the field to the TypeScript interface in `types/index.ts`
-5. Expose in `useAppState.ts` (usually no change needed if using generic `updateSetting`)
-6. Add UI control in the relevant component
+1. 在 `state.rs` 的 `AppState` 中添加带默认值的字段
+2. 在 `settings.rs` 中添加序列化/反序列化
+3. 在 `commands.rs` 中添加或更新命令处理器（通常是 `update_settings`）
+4. 在 `types/index.ts` 的 TypeScript 接口中添加字段
+5. 在 `useAppState.ts` 中暴露（如果使用通用的 `updateSetting`，通常无需更改）
+6. 在相关组件中添加 UI 控件
 
-**Checklist:**
-- [ ] Rust type matches TypeScript type
-- [ ] Default value is sensible
-- [ ] Setting persists across app restarts
-- [ ] UI reflects the current value on load
+**检查清单：**
+- [ ] Rust 类型与 TypeScript 类型匹配
+- [ ] 默认值合理
+- [ ] 设置在应用重启后持久保存
+- [ ] 加载时 UI 显示当前值
 
-### Adding a New UI Section
+### 添加新的 UI 区块
 
-1. Create `src/components/MySection.vue` using `SectionCard` wrapper
-2. Import into `App.vue` and place in the layout
-3. Use `useAppState()` for state and actions
-4. Follow existing section patterns for consistency
+1. 使用 `SectionCard` 容器创建 `src/components/MySection.vue`
+2. 导入到 `App.vue` 并放置在布局中
+3. 使用 `useAppState()` 获取状态和操作
+4. 遵循现有区块的模式以保持一致性
 
-### Adding a New Rust Command
+### 添加新的 Rust 命令
 
-1. Define in `commands.rs`:
+1. 在 `commands.rs` 中定义：
    ```rust
    #[tauri::command]
    pub fn my_command(state: State<'_, Arc<Mutex<AppState>>>) -> Result<String, String> {
-       // implementation
+       // 实现
    }
    ```
-2. Register in `lib.rs` invoke handler list
-3. Call from frontend: `await invoke('my_command', { args })`
+2. 在 `lib.rs` 的 invoke handler 列表中注册
+3. 从前端调用：`await invoke('my_command', { args })`
 
-## Testing Considerations
+## 测试注意事项
 
-- **No automated test suite exists currently.** Verification is manual.
-- Test on both macOS and Windows when making platform-specific changes
-- Verify FFmpeg operations with both system-installed and bundled FFmpeg
-- Test with various video formats and file sizes
-- Check that settings persist after app restart
-- Verify hardware encoding detection on systems with and without GPU support
+- **目前没有自动化测试套件。** 验证通过手动方式进行。
+- 进行平台特定更改时，需在 macOS 和 Windows 上都进行测试
+- 使用系统安装的 FFmpeg 和内置的 FFmpeg 分别验证 FFmpeg 操作
+- 使用各种视频格式和文件大小进行测试
+- 检查应用重启后设置是否持久保存
+- 在有 GPU 和无 GPU 支持的系统上验证硬件编码检测
 
-## Key Files to Understand First
+## 首先需要了解的关键文件
 
-If you are new to this codebase, read these files in order:
+如果您是第一次接触此代码库，请按以下顺序阅读这些文件：
 
-1. `src-tauri/src/state.rs` — Understand the data model
-2. `src-tauri/src/commands.rs` — Understand the API surface
-3. `src/composables/useAppState.ts` — Understand frontend state management
-4. `src/App.vue` — Understand the component layout
-5. `src-tauri/src/lib.rs` — Understand module and command registration
+1. `src-tauri/src/state.rs` —— 了解数据模型
+2. `src-tauri/src/commands.rs` —— 了解 API 接口
+3. `src/composables/useAppState.ts` —— 了解前端状态管理
+4. `src/App.vue` —— 了解组件布局
+5. `src-tauri/src/lib.rs` —— 了解模块和命令注册

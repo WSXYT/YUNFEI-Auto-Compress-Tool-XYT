@@ -1,71 +1,71 @@
-# Contributing Guide
+# 贡献指南
 
-Thank you for your interest in contributing to YUNFEI Auto Compress Tool! This guide will help you get started.
+感谢您有兴趣为 YUNFEI Auto Compress Tool 做出贡献！本指南将帮助您快速上手。
 
-## How to Contribute
+## 如何贡献
 
-1. **Fork** the repository
-2. **Create a branch** for your feature or fix: `git checkout -b feature/my-feature`
-3. **Make your changes** following the coding standards below
-4. **Test** your changes locally with `npm run tauri dev`
-5. **Commit** with clear, descriptive messages
-6. **Push** to your fork and open a **Pull Request**
+1. **Fork** 本仓库
+2. **创建分支** 用于您的功能或修复：`git checkout -b feature/my-feature`
+3. **进行更改**，遵循以下编码规范
+4. 使用 `npm run tauri dev` 在本地 **测试** 您的更改
+5. 使用清晰、描述性的信息进行 **提交**
+6. **推送** 到您的 Fork 仓库并发起 **Pull Request**
 
-## Pull Request Process
+## Pull Request 流程
 
-1. Ensure your PR targets the `main` branch
-2. Provide a clear description of the changes and their purpose
-3. Include screenshots for UI changes
-4. Verify the app builds successfully: `npm run tauri build`
-5. Keep PRs focused — one feature or fix per PR
-6. Respond to review feedback promptly
+1. 确保您的 PR 目标分支为 `main`
+2. 提供清晰的更改描述及其目的
+3. 如涉及 UI 更改，请附上截图
+4. 验证应用能够成功构建：`npm run tauri build`
+5. 保持 PR 专注 —— 每个 PR 只包含一个功能或修复
+6. 及时回复审阅反馈
 
-## Coding Standards
+## 编码规范
 
-### General
+### 通用规范
 
-- Write clear, self-documenting code
-- Keep functions small and focused
-- Add comments only where logic is non-obvious
+- 编写清晰、自解释的代码
+- 保持函数小巧且职责单一
+- 仅在逻辑不明显的地方添加注释
 
-### TypeScript / Vue (Frontend)
+### TypeScript / Vue（前端）
 
-- Use TypeScript strict mode — avoid `any` types
-- Follow Vue 3 Composition API patterns
-- Use `useAppState` composable for state management — do not introduce additional stores
-- Use Tailwind CSS utility classes for styling
-- Component naming: `PascalCase` with descriptive `Section` / `Dialog` suffixes
+- 使用 TypeScript 严格模式 —— 避免使用 `any` 类型
+- 遵循 Vue 3 Composition API 模式
+- 使用 `useAppState` 组合式函数进行状态管理 —— 不要引入额外的状态存储
+- 使用 Tailwind CSS 工具类进行样式设计
+- 组件命名：`PascalCase`，使用描述性的 `Section` / `Dialog` 后缀
 
-### Rust (Backend)
+### Rust（后端）
 
-- Follow standard Rust conventions (`snake_case` for functions, `PascalCase` for types)
-- Handle errors explicitly — avoid `unwrap()` in production paths
-- Keep command handlers thin — delegate logic to dedicated modules
-- Use `Arc<Mutex<>>` for shared state access
+- 遵循标准 Rust 约定（函数使用 `snake_case`，类型使用 `PascalCase`）
+- 显式处理错误 —— 在生产代码路径中避免使用 `unwrap()`
+- 保持命令处理器精简 —— 将逻辑委托给专用模块
+- 使用 `Arc<Mutex<>>` 进行共享状态访问
 
-### Commit Messages
+### 提交信息
 
-- Use present tense: "Add feature" not "Added feature"
-- Keep the subject line under 72 characters
-- Reference issue numbers where applicable: `Fix #42`
+- 使用现在时态："Add feature" 而不是 "Added feature"
+- 主题行保持在 72 个字符以内
+- 在适用的情况下引用 Issue 编号：`Fix #42`
 
-## Issue Reporting
+## 问题报告
 
-When reporting a bug, please include:
+报告 Bug 时，请包含以下信息：
 
-1. **System info** — OS version, app version
-2. **Steps to reproduce** — Detailed steps to trigger the issue
-3. **Expected behavior** — What you expected to happen
-4. **Actual behavior** — What actually happened
-5. **Logs** — Any relevant log output from the app or terminal
-6. **Screenshots** — If applicable, especially for UI issues
+1. **系统信息** —— 操作系统版本、应用版本
+2. **复现步骤** —— 触发问题的详细步骤
+3. **预期行为** —— 您期望发生的情况
+4. **实际行为** —— 实际发生的情况
+5. **日志** —— 来自应用或终端的相关日志输出
+6. **截图** —— 如适用，尤其是 UI 相关问题
 
-### Feature Requests
+### 功能请求
 
-- Search existing issues first to avoid duplicates
-- Describe the use case and expected behavior clearly
-- Explain why this feature would be useful to other users
+- 先搜索现有 Issue，避免重复
+- 清晰描述用例和预期行为
+- 说明为什么此功能对其他用户有用
 
-## License
+## 许可证
 
-By contributing, you agree that your contributions will be licensed under the [MIT License](../LICENSE).
+通过贡献代码，您同意您的贡献将按照 [MIT License](../LICENSE) 进行许可。
