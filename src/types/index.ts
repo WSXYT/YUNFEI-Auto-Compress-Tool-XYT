@@ -1,3 +1,6 @@
+export const APP_VERSION = "1.0.2.51";
+export const APP_TITLE = `YUNFEI自动压缩_${APP_VERSION}`;
+
 export type TimeGateOption = "last24h" | "last7d" | "customDate";
 export type ScanIntervalOption = "1" | "5" | "15" | "60";
 export type MountCheckIntervalOption = "3" | "5" | "10";

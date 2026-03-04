@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAppState } from "../composables/useAppState";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { APP_TITLE } from "../types";
 
 const { state, startScan, stopScan } = useAppState();
 const APP_AUTHOR_LINK = "https://space.bilibili.com/17519822";
@@ -25,7 +26,7 @@ const keywordsDisplay = (kw: string[]) =>
 <template>
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-lg font-bold text-gray-900 dark:text-white">YUNFEI自动压缩_1.0.2.51</h1>
+      <h1 class="text-lg font-bold text-gray-900 dark:text-white">{{ APP_TITLE }}</h1>
       <p class="text-xs text-gray-500 dark:text-gray-400">
         监控文件夹 → 发现<span
           :class="state.keywords.length > 0 ? 'text-blue-500 font-medium' : ''"
